@@ -1,0 +1,78 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>HowToSendDjangoFormWithAjax</title>
+
+</head>
+<body>
+
+<hr>
+<div>
+    <div>
+        <h2 style="margin-left:500px;margin-top: 20px">DjangoFormAjax</h2>
+    </div>
+
+</div>
+<hr>
+
+
+<div class="container pt-5">
+
+    <div id="my_div">
+
+    </div>
+
+    <form method="POST" id="post-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <input type="text" class="form-control" id="title" placeholder="Title" required>
+        </div>
+        <div class="form-group">
+            <textarea class="form-control" id="description" placeholder="Description" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+
+</div>
+
+</body>
+<script src="{% static 'js/jquery-2.2.4.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+    $(document).on('submit', '#post-form', function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "blog:create" %}',
+            data: {
+                title: $('#title').val(),
+                description: $('#description').val(),
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                action: 'post'
+            },
+            success: function (json) {
+                document.getElementById('post-form').reset()
+                Swal.fire(
+                    'Good job!',
+                    json['response'],
+                    'success'
+                )
+                {#$('#my_div').html('<div class="alert alert-success">' + json['response'] + '</div>')#}
+            }
+        });
+    });
+</script>
+
+</html>
